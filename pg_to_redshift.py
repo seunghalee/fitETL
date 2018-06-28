@@ -91,6 +91,7 @@ for table in tables:
 
     # only transfer non-empty tables
     if num_rows != 0:
+        query_sql = "SELECT * from \"" + str(table) + "\""
         df = pd.read_sql(query_sql, con=conn)
 
         # save the tables as csv files in temporary local folder
