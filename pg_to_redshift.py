@@ -186,8 +186,8 @@ for item in files:
                 null as 'NA'
                 ACCEPTINVCHARS
                 TRUNCATECOLUMNS
-                delimiter ',';""".format(access_key_id=AWS_ACCESS_KEY_ID, secret_access_key=AWS_SECRET_ACCESS_KEY, region=region,
-                        table_name=item[:-4], bucket_name=bucketname, file_name=item)
+                delimiter ',';""".format(table_name=item[:-4], bucket_name=bucketname, file_name=item,
+                    access_key_id=AWS_ACCESS_KEY_ID, secret_access_key=AWS_SECRET_ACCESS_KEY, region=region)
 
         cur.execute(sql)
         conn.commit()
@@ -196,6 +196,7 @@ for item in files:
     except Exception as e:
         print("ERROR")
         print(e)
+        cur.execute("rollback;")
 
 # close the connection and cursor
 cur.close()
