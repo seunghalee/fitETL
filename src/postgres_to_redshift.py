@@ -45,7 +45,7 @@ if __name__ == "__main__":
 
     s3 = connect_to_s3()
 
-    # upload postgres tables to Amazon S3 bucket
+    # upload Postgres tables to Amazon S3 bucket
     files = []
     for table in tables:
         print(table)
@@ -73,7 +73,8 @@ if __name__ == "__main__":
 
     prevent_csv_overflow()
 
-    for file_name in files[:1]:
+    # load tables into Redshift from S3
+    for file_name in files:
         try:
             f = open('/home/ubuntu/temp/' + file_name, 'r')
             reader = csv.reader(f)
