@@ -67,7 +67,6 @@ def create_table_in_redshift(reader, table_name):
             statement = (statement + '\n' + '\"{column_name}\" {data_type}' + ',')\
                 .format(column_name=str(headers[i].lower()), data_type=type_list[i])
     statement = statement[:-1] + ');'
-
     return statement
 
 
