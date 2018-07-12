@@ -8,7 +8,7 @@ import pytz
 from config import *
 from postgres_connection import PostgresConnection
 from s3_connection import *
-from redshift_connection import RedshiftConnection
+from redshiftection import RedshiftConnection
 from data_type_conversion import *
 
 
@@ -36,9 +36,9 @@ def prevent_csv_overflow():
 
 if __name__ == "__main__":
 
-    pg_conn = PostgresConnection()
-    pg_cur = pg_conn.create_cursor()
-    tables = pg_conn.all_tables()
+    pg = PostgresConnection()
+    pg_cur = pg.create_cursor()
+    tables = pg.all_tables()
     print("LIST OF TABLES:")
     print(tables)
     print("\ntotal number of tables: " + str(len(tables)))
@@ -50,7 +50,7 @@ if __name__ == "__main__":
     for table in tables:
         print(table)
         # only transfer non-empty tables
-        if pg_conn.num_rows(table) != 0:
+        if pg.num_rows(table) != 0:
             query_all_data = "SELECT * from \"" + str(table) + "\""
 
             filename = str(table) + current_time() + '.csv'
@@ -64,16 +64,14 @@ if __name__ == "__main__":
 
             s3.upload_file(local_path, bucketname, filename)
 
-    pg_conn.close()
+    pg.close()
     print("\nFiles uploaded to s3 bucket\n")
 
-    redshift_conn = RedshiftConnection()
-    redshift_cur = redshift_conn.connect_to_redshift()
-    redshift_conn.delete_existing_tables()
+    redshift = RedshiftConnection()
+    redshift.delete_existing_tables()
 
     prevent_csv_overflow()
 
-    # load tables into Redshift from S3
     for file_name in files:
         try:
             f = open('/home/ubuntu/temp/' + file_name, 'r')
@@ -82,13 +80,13 @@ if __name__ == "__main__":
             create_table_statement = create_table_in_redshift(reader, table_name)
             copy_table_statement = copy_table(table_name, file_name)
             f.close()
-            redshift_conn.run_query_commit(create_table_statement)
-            redshift_conn.run_query_commit(copy_table_statement)
+            redshift.run_query_commit(create_table_statement)
+            redshift.run_query_commit(copy_table_statement)
             print("done migrating " + table_name)
 
         except Exception as e:
             print("ERROR: " + file_name)
             print(e)
-            redshift_conn.run_query("rollback;")
+            redshift.run_query("rollback;")
 
-    redshift_conn.close()
+    redshift.close()
