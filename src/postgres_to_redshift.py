@@ -72,6 +72,7 @@ if __name__ == "__main__":
 
     prevent_csv_overflow()
 
+    # load tables from S3 into Redshift
     for file_name in files:
         try:
             f = open('/home/ubuntu/temp/' + file_name, 'r')
