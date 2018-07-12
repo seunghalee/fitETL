@@ -58,7 +58,7 @@ def create_table_in_redshift(reader, table_name):
                     else:
                         longest[i] = len(row[i]) + 50
 
-    statement = 'create table ' + table_name + ' ('
+    statement = 'create table \"' + table_name + '\" ('
     for i in range(len(headers)):
         if type_list[i] == 'varchar':
             statement = (statement + '\n \"{column_name}\" varchar({size}),')\
@@ -73,7 +73,7 @@ def create_table_in_redshift(reader, table_name):
 
 def copy_table(table_name, file_name):
     # copy table contents from file
-    sql = """copy {table_name} from 's3://{bucket_name}/{file_name}'
+    sql = """copy \"{table_name}\" from 's3://{bucket_name}/{file_name}'
             access_key_id '{access_key_id}'
             secret_access_key '{secret_access_key}'
             region '{region}'
