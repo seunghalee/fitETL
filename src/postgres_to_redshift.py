@@ -8,7 +8,7 @@ import pytz
 from config import *
 from postgres_connection import PostgresConnection
 from s3_connection import *
-from redshiftection import RedshiftConnection
+from redshift_connection import RedshiftConnection
 from data_type_conversion import *
 
 
