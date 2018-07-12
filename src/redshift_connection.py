@@ -46,8 +46,8 @@ class RedshiftConnection:
 
     def num_rows(self, table):
         self.run_query("SELECT COUNT(*) FROM \"" + str(table) + "\"")
-        n = self.cursor.fetchall()
-        return n[0][0]
+        n = self.cursor.fetchone()[0]
+        return n
 
     def delete_existing_tables(self):
         tables = self.all_tables()
