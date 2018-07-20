@@ -1,5 +1,6 @@
 import csv
 import sys
+import logging
 from datetime import datetime
 
 from pytz import timezone
@@ -35,20 +36,25 @@ def prevent_csv_overflow():
 
 
 if __name__ == "__main__":
+    # create and configure logger
+    LOG_FORMAT = "%(levelname)s %(asctime)s - %(message)s \n"
+    logging.basicConfig(filename='postgres_to_redshift.log',
+                        level=logging.DEBUG,
+                        filemode='w',
+                        format=LOG_FORMAT)
+    logger = logging.getLogger(__name__)
 
     pg = PostgresConnection()
     pg_cur = pg.create_cursor()
     tables = pg.all_tables()
-    print("LIST OF TABLES:")
-    print(tables)
-    print("\ntotal number of tables: " + str(len(tables)))
+    logger.info("{s} {l}".format(s="LIST OF TABLES: ", l=tables))
+    logger.info("Total number of tables: " + str(len(tables)))
 
     s3 = connect_to_s3()
 
     # upload Postgres tables to Amazon S3 bucket
     files = []
     for table in tables:
-        print(table)
         # only transfer non-empty tables
         if pg.num_rows(table) != 0:
             query_all_data = "SELECT * from \"" + str(table) + "\""
@@ -65,29 +71,27 @@ if __name__ == "__main__":
             s3.upload_file(local_path, bucketname, filename)
 
     pg.close()
-    print("\nFiles uploaded to s3 bucket\n")
+    logger.debug("Files uploaded to s3 bucket")
 
     redshift = RedshiftConnection()
-    redshift.delete_existing_tables()
-
     prevent_csv_overflow()
-
     # load tables from S3 into Redshift
     for file_name in files:
         try:
             f = open('/home/ubuntu/temp/' + file_name, 'r')
             reader = csv.reader(f)
             table_name = file_name[:-24]
+            redshift.delete_existing_tables(table_name)
             create_table_statement = create_table_in_redshift(reader, table_name)
             copy_table_statement = copy_table(table_name, file_name)
             f.close()
             redshift.run_query_commit(create_table_statement)
             redshift.run_query_commit(copy_table_statement)
-            print("done migrating " + table_name)
+            logger.debug("Done migrating " + str(table_name))
 
         except Exception as e:
-            print("ERROR: " + file_name)
-            print(e)
+            logger.error("{file}: {message}".format(file=file_name,
+                                                    message=e))
             redshift.run_query("rollback;")
 
     redshift.close()
