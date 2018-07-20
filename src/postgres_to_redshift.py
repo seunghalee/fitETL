@@ -66,7 +66,7 @@ if __name__ == "__main__":
     pg.close()
     log.info("Files uploaded to s3 bucket")
 
-    redshift = RedshiftConnection()
+    rs = RedshiftConnection()
     prevent_csv_overflow()
     # load tables from S3 into Redshift
     for file_name in files:
@@ -74,17 +74,17 @@ if __name__ == "__main__":
             f = open(PROJ_DIR + "temp/" + file_name, 'r')
             reader = csv.reader(f)
             table_name = file_name[:-24]
-            redshift.delete_existing_tables(table_name)
+            rs.delete_existing_tables(table_name)
             create_table_statement = create_table_in_redshift(reader, table_name)
             copy_table_statement = copy_table(table_name, file_name)
             f.close()
-            redshift.run_query_commit(create_table_statement)
-            redshift.run_query_commit(copy_table_statement)
+            rs.run_query_commit(create_table_statement)
+            rs.run_query_commit(copy_table_statement)
             log.info("Done migrating " + str(table_name))
 
         except Exception as e:
             log.error("{file}: {message}".format(file=file_name,
                                                  message=e))
-            redshift.run_query("rollback;")
+            rs.run_query("rollback;")
 
-    redshift.close()
+    rs.close()
