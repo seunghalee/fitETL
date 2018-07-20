@@ -2,6 +2,7 @@ import pandas as pd
 from collections import defaultdict
 from postgres_connection import PostgresConnection
 from redshift_connection import RedshiftConnection
+from utils import *
 
 
 def not_match(list1, list2):
@@ -45,16 +46,17 @@ if __name__ == "__main__":
                             "Postgres": pg_rows, 'Redshift': rs_rows})
     columns_titles = ['Table_Name', 'Postgres', 'Redshift']
     df = df.reindex(columns=columns_titles)
-    print(df)
+    log = setup_logger(file_name=__file__, name=__name__)
+    log.info(df)
 
     # check if number of rows match for all tables in Postgres and Redshift
     if not not_match(pg_rows, rs_rows):
-        print("All tables have been successfully transferred!")
+        log.info("All tables have been successfully transferred!")
 
     else:
-        print("\nTABLES THAT DO NOT MATCH:")
+        log.error("TABLES THAT DO NOT MATCH:")
         for table in not_match(pg_rows, rs_rows):
-            print(migrated_tables[int(table[0])])
+            log.error(migrated_tables[int(table[0])])
 
-    print("\nEMPTY POSTGRES TABLES:")
-    print('\n'.join(empty_tables))
+    log.info("{s}{tables}".format(s="EMPTY POSTGRES TABLES: ",
+                                  tables='\n'.join(empty_tables)))
