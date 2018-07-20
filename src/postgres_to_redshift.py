@@ -64,7 +64,7 @@ if __name__ == "__main__":
             s3.upload_file(local_path, bucketname, filename)
 
     pg.close()
-    log.debug("Files uploaded to s3 bucket")
+    log.info("Files uploaded to s3 bucket")
 
     redshift = RedshiftConnection()
     prevent_csv_overflow()
@@ -80,7 +80,7 @@ if __name__ == "__main__":
             f.close()
             redshift.run_query_commit(create_table_statement)
             redshift.run_query_commit(copy_table_statement)
-            log.debug("Done migrating " + str(table_name))
+            log.info("Done migrating " + str(table_name))
 
         except Exception as e:
             log.error("{file}: {message}".format(file=file_name,
