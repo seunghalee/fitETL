@@ -49,11 +49,8 @@ class RedshiftConnection:
         n = self.cursor.fetchone()[0]
         return n
 
-    def delete_existing_tables(self):
-        tables = self.all_tables()
-        for table in tables:
-            self.cursor.execute("drop table \"" + str(table) + "\"")
-        self.conn.commit()
+    def delete_existing_table(self, table):
+        self.run_query_commit("drop table \"" + str(table) + "\"")
 
     def close(self):
         self.cursor.close()
