@@ -11,7 +11,7 @@ Module that contains methods to connect to Postgres and execute SQL statements. 
 This is the working migration script that exports tables from Postgres to Redshift.
 
 ## redshift_connection.py
-Module that contains methods to connect to Redshift and execute SQL statements. Get name of all Redshift tables in the database using `all_tables()` and get number of total rows in a given table using `num_rows(table_name)`. `delete_existing_table(table_name)` drops a given table -- during the migration process, each table is deleted and then recreated.
+Module that contains methods to connect to Redshift and execute SQL statements. Get names of all Redshift tables in the database using `all_tables()` and get number of total rows in a given table using `num_rows(table_name)`. `delete_existing_table(table_name)` drops a given table -- during the migration process, each table is deleted and then recreated.
 
 ## s3_connection.py
 Module that contains methods to establish a connection to S3, get all bucket names, and  download files from a given bucket.
