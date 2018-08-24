@@ -5,7 +5,7 @@ Save AWS credentials, which have been set as environmental variables, as Python 
 Module that contains methods to convert Postgres columns into data types supported in Redshift.
 
 ## postgres_connection.py
-Module that contains methods to connect to Postgres and execute SQL statements. Get name of all Postgres tables in the database using `all_tables()` and get number of total rows in a given table using `num_rows(table_name)`.
+Module that contains methods to connect to Postgres and execute SQL statements. Get names of all Postgres tables in the database using `all_tables()` and get number of total rows in a given table using `num_rows(table_name)`.
 
 ## postgres_to_redshift.py
 This is the working migration script that exports tables from Postgres to Redshift.
